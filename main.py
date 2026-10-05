@@ -5,6 +5,12 @@ import pandas as pd
 import numpy as np
 
 app = FastAPI()
+@app.get("/")
+def home():
+    return {
+        "message": "Skin Clinic Campaign Analysis API",
+        "endpoint": "/campaign-analysis"
+    }
 
 df = pd.read_csv("skin clinic campaign.csv")
 
