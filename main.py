@@ -22,6 +22,7 @@ df["Product_Usage"] = pd.cut(
 @app.get("/campaign-analysis", response_class=HTMLResponse)
 def campaign_analysis():
 
+    # Gender response
     gender_response = (
         df.groupby("Gender")["Response"]
         .mean()
@@ -35,4 +36,71 @@ def campaign_analysis():
         "Response Rate (%)"
     ]
 
-    return gender_response.to_html(index=False)
+    # Age group response
+    age_response = (
+        df.groupby("AgeGroup")["Response"]
+        .mean()
+        .mul(100)
+        .round(2)
+        .reset_index()
+    )
+
+    age_response.columns = [
+        "Age Group",
+        "Response Rate (%)"
+    ]
+
+    # Purchase in last quarter response
+    purchase_response = (
+        df.groupby("Purchase_Last_Quarter")["Response"]
+        .mean()
+        .mul(100)
+        .round(2)
+        .reset_index()
+    )
+
+    purchase_response.columns = [
+        "Purchased Last Quarter",
+        "Response Rate (%)"
+    ]
+
+    # Product usage response
+    product_response = (
+        df.groupby(
+            "Product_Usage",
+            observed=False
+        )["Response"]
+        .mean()
+        .mul(100)
+        .round(2)
+        .reset_index()
+    )
+
+    product_response.columns = [
+        "Product Usage",
+        "Response Rate (%)"
+    ]
+
+    html = f"""
+    <html>
+    <body>
+
+        <h1>Skin Clinic Campaign Analysis</h1>
+
+        <h2>Gender vs Campaign Response</h2>
+        {gender_response.to_html(index=False)}
+
+        <h2>Age Group vs Campaign Response</h2>
+        {age_response.to_html(index=False)}
+
+        <h2>Purchase in Last Quarter vs Campaign Response</h2>
+        {purchase_response.to_html(index=False)}
+
+        <h2>Product Usage vs Campaign Response</h2>
+        {product_response.to_html(index=False)}
+
+    </body>
+    </html>
+    """
+
+    return html
